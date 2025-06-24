@@ -1,0 +1,74 @@
+[
+    {
+        "model": "habits.habit",
+        "pk": 1,
+        "fields": {
+            "place": "Работа",
+            "time": "14:30:00",
+            "action": "Выпить воды",
+            "status": "Active",
+            "is_pleasant": false,
+            "periodicity": "daily",
+            "reward": null,
+            "duration": 120,
+            "is_public": false,
+            "created_at": "2025-06-19T08:31:59.572446+03:00",
+            "user": 1,
+            "related_habit": null
+        }
+    },
+    {
+        "model": "habits.habit",
+        "pk": 2,
+        "fields": {
+            "place": "Дом",
+            "time": "07:30:00",
+            "action": "Сделать зарядку",
+            "status": "Active",
+            "is_pleasant": false,
+            "periodicity": "daily",
+            "reward": null,
+            "duration": 120,
+            "is_public": false,
+            "created_at": "2025-06-17T12:48:12.572446+03:00",
+            "user": 5,
+            "related_habit": null
+        }
+    },
+    {
+        "model": "habits.habit",
+        "pk": 3,
+        "fields": {
+            "place": "Дом",
+            "time": "08:00:00",
+            "action": "Сьесть апельсин",
+            "status": "Active",
+            "is_pleasant": true,
+            "periodicity": "daily",
+            "reward": null,
+            "duration": 120,
+            "is_public": false,
+            "created_at": "2025-06-17T13:41:28.572446+03:00",
+            "user": 5,
+            "related_habit": 2
+        }
+    },
+    {
+        "model": "habits.habit",
+        "pk": 4,
+        "fields": {
+            "place": "Дом",
+            "time": "20:00:00",
+            "action": "Помыть посуду",
+            "status": "Active",
+            "is_pleasant": false,
+            "periodicity": "daily",
+            "reward": "Выпить чашку кофе",
+            "duration": 120,
+            "is_public": false,
+            "created_at": "2025-06-20T13:18:24.572446+03:00",
+            "user": 1,
+            "related_habit": null
+        }
+    }
+]
