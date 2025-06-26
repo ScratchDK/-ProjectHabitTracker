@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-20cue4$kcnr1mkn44o70nfke)kdk9$7(2gx1+l^e#4u_9s#ogp'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -167,7 +167,7 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_BEAT_SCHEDULE = {
     'send-daily-reminders': {
         'task': 'habits.tasks.send_daily_reminders',
-        'schedule': crontab(hour=9, minute=0),  # Каждый день в 9:00 утра
+        'schedule': 300.0,  # Каждый день в 9:00 утра
     },
 }
 
@@ -179,5 +179,5 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://read-and-write.example.com",
+    "https://read-and-write.examp le.com",
 ]

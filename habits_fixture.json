@@ -11,7 +11,7 @@
             "periodicity": "daily",
             "reward": null,
             "duration": 120,
-            "is_public": false,
+            "is_public": true,
             "created_at": "2025-06-19T08:31:59.572446+03:00",
             "user": 1,
             "related_habit": null
@@ -25,7 +25,7 @@
             "time": "07:30:00",
             "action": "Сделать зарядку",
             "status": "Active",
-            "is_pleasant": false,
+            "is_pleasant": true,
             "periodicity": "daily",
             "reward": null,
             "duration": 120,
@@ -47,7 +47,7 @@
             "periodicity": "daily",
             "reward": null,
             "duration": 120,
-            "is_public": false,
+            "is_public": true,
             "created_at": "2025-06-17T13:41:28.572446+03:00",
             "user": 5,
             "related_habit": 2
@@ -65,7 +65,7 @@
             "periodicity": "daily",
             "reward": "Выпить чашку кофе",
             "duration": 120,
-            "is_public": false,
+            "is_public": true,
             "created_at": "2025-06-20T13:18:24.572446+03:00",
             "user": 1,
             "related_habit": null

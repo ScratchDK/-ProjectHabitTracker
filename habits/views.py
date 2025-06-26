@@ -16,8 +16,8 @@ class HabitViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Habit.objects.filter(Q(user=self.request.user) | Q(is_public=True))
-        return Habit.objects.filter(is_public=True)
+            return Habit.objects.filter(user=self.request.user)
+        return Habit.objects.none()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -25,13 +25,26 @@ class HabitViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update", "destroy"]:
             return [permissions.IsAuthenticated(), IsOwner()]
-        elif self.action in ['list', 'retrieve']:
+        elif self.action in ['list', 'retrieve', 'public']:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]  # По умолчанию для других действий
 
+    @action(detail=False, methods=['get'])
+    def public(self, request):
+        queryset = Habit.objects.filter(is_public=True)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['post'])
     def perform(self, request, pk=None):
-        habit = self.get_object()
+        try:
+            habit = Habit.objects.get(pk=pk)
+        except Habit.DoesNotExist:
+            return Response({"detail": "Привычка не найдена"}, status=status.HTTP_404_NOT_FOUND)
 
         if habit.user != request.user:
             return Response(

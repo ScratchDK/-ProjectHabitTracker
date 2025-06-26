@@ -64,11 +64,11 @@ class HabitViewSetTestCase(APITestCase):
         url = reverse('habits:habits-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 3)
+        self.assertEqual(len(response.data['results']), 1)
 
     def test_list_habits_unauthenticated(self):
         self.client.logout()
-        url = reverse('habits:habits-list')
+        url = reverse('habits:habits-public')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         public_habits = [h for h in response.data['results'] if h['is_public']]
