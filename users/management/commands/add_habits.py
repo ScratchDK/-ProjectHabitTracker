@@ -4,7 +4,7 @@ from django.core.management import call_command
 
 
 class Command(BaseCommand):
-    help = 'Добавляет тестовые привычки'
+    help = "Добавляет тестовые привычки"
 
     def handle(self, *args, **kwargs):
         self.stdout.write("Очистка существующих данных...")
@@ -14,5 +14,5 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS("Старые данные успешно удалены!"))
 
-        call_command('loaddata', 'habits_fixture.json')
-        self.stdout.write(self.style.SUCCESS('Данные успешно загружены!'))
+        call_command("loaddata", "habits_fixture.json")
+        self.stdout.write(self.style.SUCCESS("Данные успешно загружены!"))

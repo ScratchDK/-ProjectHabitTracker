@@ -12,7 +12,9 @@ from habits.tasks import send_related_habits_notification
 class HabitViewSet(viewsets.ModelViewSet):
     serializer_class = HabitSerializer
     pagination_class = MyPagination
-    permission_classes = [permissions.IsAuthenticated]  # Чтение для всех, запись для авторизованных
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]  # Чтение для всех, запись для авторизованных
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -25,11 +27,11 @@ class HabitViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update", "destroy"]:
             return [permissions.IsAuthenticated(), IsOwner()]
-        elif self.action in ['list', 'retrieve', 'public']:
+        elif self.action in ["list", "retrieve", "public"]:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]  # По умолчанию для других действий
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=["get"])
     def public(self, request):
         queryset = Habit.objects.filter(is_public=True)
         page = self.paginate_queryset(queryset)
@@ -39,23 +41,25 @@ class HabitViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def perform(self, request, pk=None):
         try:
             habit = Habit.objects.get(pk=pk)
         except Habit.DoesNotExist:
-            return Response({"detail": "Привычка не найдена"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Привычка не найдена"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         if habit.user != request.user:
             return Response(
                 {"detail": "Вы не можете отмечать выполнение чужих привычек"},
-                status=status.HTTP_403_FORBIDDEN
+                status=status.HTTP_403_FORBIDDEN,
             )
 
         if habit.status == "Completed":
             return Response(
                 {"detail": "Эта привычка уже выполнена"},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # Обновляем статус
@@ -70,7 +74,7 @@ class HabitViewSet(viewsets.ModelViewSet):
                 "message": "Привычка отмечена как выполненная",
                 "habit_id": habit.id,
                 "action": habit.action,
-                "has_related": habit.main_habits.filter(status="Active").exists()
+                "has_related": habit.main_habits.filter(status="Active").exists(),
             },
-            status=status.HTTP_200_OK
+            status=status.HTTP_200_OK,
         )
