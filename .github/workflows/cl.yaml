@@ -42,11 +42,11 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
-        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    redis:
+      image: redis
+      ports:
+        - 6379:6379
+      options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Check out code
@@ -102,39 +102,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}  # Используем ключ из Secrets
 
       - name: Test SSH connection
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH OK'"
+        run: ssh -T git@github.com || true  # Проверка подключения
 
-      - name: Create .env on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "cat > .env.docker << 'EOL'
-          DATABASE_NAME=${{ secrets.DATABASE_NAME }}
-          DATABASE_USER=${{ secrets.DATABASE_USER }}
-          DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
-          DATABASE_HOST=db
-          DATABASE_PORT=5432
-          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-          SECRET_KEY=${{ secrets.SECRET_KEY }}
-          EOL"
-
-      - name: Copy compose file
-        run: scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/
-
-      - name: Deploy containers
+      - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
-            docker-compose down
-            docker-compose pull
-            docker-compose up -d
+            cat <<EOF > .env.docker
+            DATABASE_NAME=${{ secrets.DATABASE_NAME }}
+            DATABASE_USER=${{ secrets.DATABASE_USER }}
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_HOST=db
+            DATABASE_PORT=5432
+            EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
+            EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
+            TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            REDIS_URL=redis://redis:6379/0
+            CELERY_BROKER_URL=redis://redis:6379/0
+            EOF
+          
+            docker-compose down && docker-compose up -d
           "
-
-      - name: Verify deployment
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "docker ps"
