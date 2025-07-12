@@ -4,6 +4,8 @@ on: [push, pull_request]
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
+  DJANGO_SETTINGS_MODULE: config.settings
+  SECRET_KEY: ${{ secrets.SECRET_KEY || 'dummy-key-for-tests-only' }}
 
 jobs:
   lint:
