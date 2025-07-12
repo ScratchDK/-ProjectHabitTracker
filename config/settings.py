@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -178,3 +179,7 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://read-and-write.examp le.com",
 ]
+
+if 'test' in sys.argv or os.getenv('GITHUB_ACTIONS') == 'true':
+    CELERY_TASK_ALWAYS_EAGER = True  # Задачи выполняются синхронно
+    CELERY_TASK_EAGER_PROPAGATES = True  # Игнорировать брокер
