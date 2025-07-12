@@ -112,7 +112,7 @@ jobs:
 
       - name: Deploy to server
         run: |
-          rsync -avz --delete \
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
           --exclude='.git/' \
           --exclude='.env' \
           ./ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/var/www/myapp/
