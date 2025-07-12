@@ -114,7 +114,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
             sudo mkdir -p /var/www/myapp
-            sudo chown -R $USER:$USER /var/www/myapp
+            sudo chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} /var/www/myapp
           "
 
       - name: Copy project files
