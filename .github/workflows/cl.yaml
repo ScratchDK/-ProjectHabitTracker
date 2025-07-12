@@ -102,23 +102,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install SSH key
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}  # Используем ключ из Secrets
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: Test SSH connection
-        run: ssh -T git@github.com || true  # Проверка подключения
-
-      - name: Deploy to server
+      - name: Prepare server directory
         run: |
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
-          --exclude='.git/' \
-          --exclude='.env' \
-          ./ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/var/www/myapp/
-          
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
-            cat <<EOF > .env.docker
+            sudo mkdir -p /var/www/myapp
+            sudo chown -R $USER:$USER /var/www/myapp
+          "
+
+      - name: Copy project files
+        run: |
+          rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            --exclude='.git/' \
+            --exclude='.env' \
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/var/www/myapp/
+
+      - name: Create .env.docker
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
+            cat <<'EOF' > /var/www/myapp/.env.docker
             DATABASE_NAME=${{ secrets.DATABASE_NAME }}
             DATABASE_USER=${{ secrets.DATABASE_USER }}
             DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
@@ -134,6 +144,19 @@ jobs:
             REDIS_URL=redis://redis:6379/0
             CELERY_BROKER_URL=redis://redis:6379/0
             EOF
-          
-            docker-compose down && docker-compose up -d
+          "
+
+      - name: Deploy containers
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
+            cd /var/www/myapp
+            docker-compose down
+            docker-compose up -d --build
+          "
+
+      - name: Verify deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
+            docker ps
+            curl -I http://localhost || true
           "
