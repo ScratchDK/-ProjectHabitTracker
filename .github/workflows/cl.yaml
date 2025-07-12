@@ -5,7 +5,9 @@ on: [push, pull_request]
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/myapp:${{ github.sha }}
   DJANGO_SETTINGS_MODULE: config.settings
-  SECRET_KEY: ${{ secrets.SECRET_KEY || 'dummy-key-for-tests-only' }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY || 'dummy-test-key-1234567890' }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || 'dummy-telegram-token' }}
+  CELERY_TASK_ALWAYS_EAGER: "True"
 
 jobs:
   lint:
