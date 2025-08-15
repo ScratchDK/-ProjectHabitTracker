@@ -7,7 +7,11 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from users.serializers import (
-    CustomUserSerializer, PublicUserSerializer, PrivateUserSerializer, TelegramConnectSerializer)
+    CustomUserSerializer,
+    PublicUserSerializer,
+    PrivateUserSerializer,
+    TelegramConnectSerializer,
+)
 
 
 # POST
@@ -17,7 +21,7 @@ class CustomUserCreateAPIView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        password = serializer.validated_data.get('password')
+        password = serializer.validated_data.get("password")
         user = serializer.save(is_active=True)
         user.set_password(password)
         user.save()
@@ -27,14 +31,14 @@ class CustomUserCreateAPIView(generics.CreateAPIView):
 class CustomUserUpdateAPIView(generics.UpdateAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
-    lookup_field = 'email'
+    lookup_field = "email"
     permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
 
 
 # DELETE
 class CustomUserDeleteAPIView(generics.DestroyAPIView):
     queryset = CustomUser.objects.all()
-    lookup_field = 'email'
+    lookup_field = "email"
     permission_classes = [IsAuthenticated, IsAdminUser]
 
 
@@ -50,7 +54,7 @@ class CustomUserListAPIView(generics.ListAPIView):
 class CustomUserDetailAPIView(generics.RetrieveAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
-    lookup_field = 'email'
+    lookup_field = "email"
     permission_classes = [IsAuthenticated, IsProfileOwner]
 
     def get_serializer_class(self):
@@ -59,7 +63,7 @@ class CustomUserDetailAPIView(generics.RetrieveAPIView):
         return PublicUserSerializer
 
     def get_permissions(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return [IsAuthenticated()]
         return [IsAuthenticated(), IsProfileOwner()]
 
@@ -69,14 +73,12 @@ class ConnectTelegramView(APIView):
 
     def patch(self, request):
         serializer = TelegramConnectSerializer(
-            instance=request.user,
-            data=request.data,
-            partial=True
+            instance=request.user, data=request.data, partial=True
         )
         if serializer.is_valid():
             serializer.save()
             return Response(
                 {"status": "Telegram chat ID успешно сохранен"},
-                status=status.HTTP_200_OK
+                status=status.HTTP_200_OK,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

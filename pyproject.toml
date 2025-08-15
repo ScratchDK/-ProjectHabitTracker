@@ -16,11 +16,13 @@ django-filter = "25.1"
 drf-yasg = "1.21.10"
 django-celery-beat = "2.8.1"
 django-extensions = "^4.1"
-psycopg2 = "^2.9.10"
 python-telegram-bot = "13.7"
 urllib3 = "<2.0.0"
 pillow = "^11.2.1"
 redis = "6.2.0"
+psycopg2-binary = "^2.9.10"
+flake8 = "^7.3.0"
+black = "^25.1.0"
 
 
 [build-system]

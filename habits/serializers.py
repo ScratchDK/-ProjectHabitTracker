@@ -8,8 +8,8 @@ class HabitSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def validate(self, data):
-        reward = data.get('reward')
-        related_habit = data.get('related_habit')
+        reward = data.get("reward")
+        related_habit = data.get("related_habit")
 
         if reward and related_habit:
             raise serializers.ValidationError(
